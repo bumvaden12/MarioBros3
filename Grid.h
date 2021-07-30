@@ -13,6 +13,10 @@
 #include "ItemEndGame.h"
 #include "MovingWood.h"
 #include "BomerangBrother.h"
+#include "WoodenBrick.h"
+#include "MusicNote.h"
+#include "Brother2.h"
+#include "BoomerangOfBrother.h"
 
 #define OBJECT_TYPE_MARIO			0
 #define OBJECT_TYPE_BRICK			1
@@ -32,6 +36,9 @@
 #define	OBJECT_TYPE_MOVING_WOOD		15
 #define OBJECT_TYPE_BOMERANGBROTHER	16
 #define OBJECT_TYPE_SELECT_EFFECT	17
+#define OBJECT_TYPE_WOODENBRICK		18
+#define OBJECT_TYPE_MUSICNOTE		19
+#define	OBJECT_TYPE_BROTHERS		20
 #define OBJECT_TYPE_BOUNDARYBRICK	9999
 class Grid
 {

@@ -27,6 +27,7 @@
 #define MARIO_STATE_GO_MAIN_MAP							1200
 #define MARIO_STATE_ELASETIC							1300
 #define MARIO_STATE_GO_ENDSCENCE						1400
+#define MARIO_STATE_ELASETIC_X							1500
 #define MARIO_STATE_GO_SELECT_MAP						9999
 
 //================================MARIO ANI GENERAL ZONE=================================
@@ -238,7 +239,8 @@
 #define DIRECT_DOWN									4
 #define MARIO_SPEED_SELECT_MAP						0.1f
 
-
+#define MARIO_DEFLECT_VX			0.002f
+#define MARIO_DEFLECT_LEFT_RIGHT	0.004f
 //D
 #define MARIO_D_HEED_TO_HAND_ATTACK						12
 #define MARIO_D_HEED_TO_TAIL_ATTACK						16

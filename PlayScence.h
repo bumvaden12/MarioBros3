@@ -90,6 +90,7 @@ public:
 	bool isCompleteTransLight = false;
 	bool isCreatedText = false;
 	bool isFindPipe = false;
+	bool isNotFindPipe = false;
 
 
 	bool isScreenDark = false;

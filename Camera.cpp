@@ -21,11 +21,15 @@ void Camera::Update(DWORD dt)
 		{
 			cam_x = player->x - (CGame::GetInstance()->screen_width / 2);
 		}
-
+		
 		if (player->isInMainMap)
 		{
 			//CAMY TOT NHAT 
-			if (player->y > CGame::GetInstance()->screen_height / 4 && player->y < mapH - 350)
+			int MapHDiff;
+			if (CGame::GetInstance()->current_scene == 5)MapHDiff = 130;
+			else if (CGame::GetInstance()->current_scene == 6)MapHDiff = 130;
+			else MapHDiff = 350;
+			if (player->y > CGame::GetInstance()->screen_height / 4 && player->y < mapH -MapHDiff)
 			{
 				cam_y = player->y - CGame::GetInstance()->screen_height / 4;
 			}
@@ -49,24 +53,35 @@ void Camera::Update(DWORD dt)
 		}*/
 		cam_x += vx *dt;
 		//DebugOut(L"player->x: %f", player->x);
-		if (cam_x > 1778 && cam_x < 1800)
+		if (CGame::GetInstance()->current_scene != 6)
 		{
-			cam_x = 1778.0f; //Lock Cam On End Pipe
+			if (cam_x > 1778 && cam_x < 1800)
+			{
+				cam_x = 1778.0f; //Lock Cam On End Pipe
+			}
+			else
+				if (cam_x > 1800)
+				{
+					cam_x = player->x - (CGame::GetInstance()->screen_width / 4);
+					if (player->x > (CGame::GetInstance()->screen_width / 4) && player->x + (CGame::GetInstance()->screen_width / 4) < 2528)
+					{
+						cam_x = player->x - (CGame::GetInstance()->screen_width / 4);
+						if (cam_x < 2048) //Look cam First EndScene
+							cam_x = 2048;
+					}
+					if (cam_x > 2290) //Look Cam Last EndScene
+						cam_x = 2290;
+				}
+			cam_y = 240.0f;
 		}
 		else
-		if (cam_x > 1800)
 		{
-			cam_x = player->x - (CGame::GetInstance()->screen_width / 4);
-			if (player->x > (CGame::GetInstance()->screen_width / 4) && player->x + (CGame::GetInstance()->screen_width / 4) < 2528)
+			if (cam_x > 1000- CGame::GetInstance()->screen_width )
 			{
-				cam_x = player->x - (CGame::GetInstance()->screen_width / 4);
-				if (cam_x < 2048) //Look cam First EndScene
-					cam_x = 2048;
+				cam_x = 1000.0f - CGame::GetInstance()->screen_width; //Lock Cam On End Pipe
 			}
-			if (cam_x > 2290) //Look Cam Last EndScene
-				cam_x = 2290;
+			cam_y = 240.0f;
 		}
-		cam_y = 240.0f;
 	}
 	CGame::GetInstance()->SetCamPos((cam_x), (cam_y));
 }

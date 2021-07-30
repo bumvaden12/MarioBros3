@@ -14,7 +14,7 @@ CPitStop::CPitStop(bool isLeft, bool isRight, bool isUp, bool isDown)
 
 void CPitStop::Render()
 {
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 void CPitStop::GetBoundingBox(float& l, float& t, float& r, float& b)

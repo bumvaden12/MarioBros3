@@ -51,6 +51,36 @@ CGameObject* Grid::CreateNewObj(string line)
 		GB = atoi(tokens[10].c_str());
 		obj->SetGridPos(GL, GT, GR, GB);
 		break;
+	case OBJECT_TYPE_WOODENBRICK:
+	{
+		int typeBrick = atoi(tokens[7].c_str());
+		obj = new WoodenBrick(typeBrick);
+		obj->amountX = atoi(tokens[5].c_str());
+		obj->amountY = atoi(tokens[6].c_str());
+		obj->SetPosition(x, y);
+		obj->animation_set = CAnimationSets::GetInstance()->Get(ani_set_id);
+		GL = atoi(tokens[8].c_str());
+		GT = atoi(tokens[9].c_str());
+		GR = atoi(tokens[10].c_str());
+		GB = atoi(tokens[11].c_str());
+		obj->SetGridPos(GL, GT, GR, GB);
+		break;
+	}
+	case OBJECT_TYPE_MUSICNOTE:
+	{
+		int typeNote = atoi(tokens[7].c_str());
+		obj = new MusicNote(typeNote);
+		obj->amountX = atoi(tokens[5].c_str());
+		obj->amountY = atoi(tokens[6].c_str());
+		obj->SetPosition(x, y);
+		obj->animation_set = CAnimationSets::GetInstance()->Get(ani_set_id);
+		GL = atoi(tokens[8].c_str());
+		GT = atoi(tokens[9].c_str());
+		GR = atoi(tokens[10].c_str());
+		GB = atoi(tokens[11].c_str());
+		obj->SetGridPos(GL, GT, GR, GB);
+		break;
+	}
 	case OBJECT_TYPE_CLOUD_BRICK:
 		obj = new CCloudBrick();
 		obj->amountX = atoi(tokens[5].c_str());
@@ -80,7 +110,7 @@ CGameObject* Grid::CreateNewObj(string line)
 		int type = atoi(tokens[7].c_str());
 		obj = new CWeakBrick(x,y,type);
 		obj->amountX = atoi(tokens[5].c_str());
-		obj->amountY = atoi(tokens[6].c_str());
+		obj->amountY = atoi(tokens[6].c_str());	
 		obj->SetPosition(x, y);
 		obj->animation_set = CAnimationSets::GetInstance()->Get(ani_set_id);
 		GL = atoi(tokens[8].c_str());
@@ -185,7 +215,7 @@ CGameObject* Grid::CreateNewObj(string line)
 	}
 	case OBJECT_TYPE_BOMERANGBROTHER:
 	{
-		obj = new CBomerangBrother(x,y);
+		obj = new CBomerangBrother(x, y);
 		obj->amountX = atoi(tokens[5].c_str());
 		obj->amountY = atoi(tokens[6].c_str());
 		//obj->SetPosition(x, y);
@@ -196,6 +226,25 @@ CGameObject* Grid::CreateNewObj(string line)
 		GB = atoi(tokens[10].c_str());
 		obj->SetGridPos(GL, GT, GR, GB);
 		listEnemy_S.push_back(obj);
+		break;
+	}
+	case OBJECT_TYPE_BROTHERS:
+	{
+		int IDType = atoi(tokens[5].c_str());
+		int AniWeapon = atoi(tokens[6].c_str());
+		BoomerangOfBrother* Boomerang1 = new BoomerangOfBrother(AniWeapon);
+		BoomerangOfBrother* Boomerang2 = new BoomerangOfBrother(AniWeapon);
+		obj = new Brothers(IDType, Boomerang1, Boomerang2, player);
+		obj->SetPosition(x, y);
+		obj->animation_set = CAnimationSets::GetInstance()->Get(ani_set_id);
+		GL = atoi(tokens[7].c_str());
+		GT = atoi(tokens[8].c_str());
+		GR = atoi(tokens[9].c_str());
+		GB = atoi(tokens[10].c_str());
+		obj->SetGridPos(GL, GT, GR, GB);
+		listEnemy_S.push_back(obj);
+		listEnemy_S.push_back(Boomerang1);
+		listEnemy_S.push_back(Boomerang2);
 		break;
 	}
 	case OBJECT_TYPE_COIN_SPIN:

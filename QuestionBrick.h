@@ -26,6 +26,7 @@ public:
 	CItem* item;
 	float start_y;
 	bool isItem = true;
+	int numCoinEffect = 0;
 	bool isCollision = false;
 	int typeQuestion = QUESTION_TYPE_COIN;
 	int typeItem = ITEM_LEVEL_COIN;

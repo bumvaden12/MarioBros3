@@ -121,10 +121,10 @@ void CTail::Update(DWORD dt, vector<LPGAMEOBJECT> *listMapObj, vector<LPGAMEOBJE
 					}
 					else if (listEnemy->at(i)->type == TYPE::BOOMERANG_BROTHER)
 					{
-						CBomerangBrother* brother = dynamic_cast<CBomerangBrother*>(listEnemy->at(i));
+						/*CBomerangBrother* brother = dynamic_cast<CBomerangBrother*>(listEnemy->at(i));
 						brother->SetState(BOMERANGBROTHER_STATE_DIE);
 						effect = new CImpactEffect(brother->x, brother->y);
-						brother->vy = -0.1f;
+						brother->vy = -0.1f;*/
 					}
 		}
 	}

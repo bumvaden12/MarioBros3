@@ -53,6 +53,10 @@ void CQuestionBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* listItem)
 		case ITEM_LEVEL_COIN:
 			item = new CCoin(x, y, TYPE::COIN_EFFECT);
 			break;
+		case ITEM_LEVEL_COIN_MULTIPLE:
+			item = new CCoin(x, y, TYPE::COIN_EFFECT);
+			numCoinEffect++;
+			break;
 		}	
 		listItem->push_back(item);
 		y = start_y;
@@ -74,6 +78,14 @@ void CQuestionBrick::SetState(int state)
 		{
 			vy = -0.08;
 			isItem = false;
+			if (typeItem == ITEM_LEVEL_COIN_MULTIPLE)
+			{
+				if (numCoinEffect < 4)
+				{
+					isItem = true;
+				}
+			}
+		
 			break;
 		}
 	}

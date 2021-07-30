@@ -3,7 +3,7 @@
 
 CBomerangBrother::CBomerangBrother(float x, float y)
 {
-	this->type = TYPE::BOOMERANG_BROTHER;
+	//this->type = TYPE::BOOMERANG_BROTHER;
 	isActive = true;
 	minX = x;
 	maxX = x + DISTANCE_GO_AROUND;

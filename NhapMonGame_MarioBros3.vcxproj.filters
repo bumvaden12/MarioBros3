@@ -237,6 +237,18 @@
     <ClCompile Include="BackGroundIntro.cpp">
       <Filter>GameObject\Intro</Filter>
     </ClCompile>
+    <ClCompile Include="WoodenBrick.cpp">
+      <Filter>GameObject\Map Object</Filter>
+    </ClCompile>
+    <ClCompile Include="MusicNote.cpp">
+      <Filter>GameObject\Map Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Brother2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BoomerangOfBrother.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -424,6 +436,18 @@
     </ClInclude>
     <ClInclude Include="BackGroundIntro.h">
       <Filter>GameObject\Intro</Filter>
+    </ClInclude>
+    <ClInclude Include="WoodenBrick.h">
+      <Filter>GameObject\Map Object</Filter>
+    </ClInclude>
+    <ClInclude Include="MusicNote.h">
+      <Filter>GameObject\Map Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Brother2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BoomerangOfBrother.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

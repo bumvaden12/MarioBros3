@@ -217,9 +217,22 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	{
 	case OBJECT_TYPE_MARIO:
 	{
-		
+		float x2;
+		float y2;
+		if (tokens.size() >= 5)
+		{
+			 x2 = atof(tokens[4].c_str());
+			 y2 = atof(tokens[5].c_str());
+		}
 		player = CMario::GetInstance();
+		if (CGame::GetInstance()->current_scene == 5 && CGame::GetInstance()->Isinhiddenmap)
+		{
+			player->SetPosition(x2, y2);
+			player->Fall();
+		}
+		else
 		player->SetPosition(x, y);
+		isFindPipe = false;
 		player->animation_set = CAnimationSets::GetInstance()->Get(ani_set_id);
 		break;
 	}
@@ -715,11 +728,11 @@ void CPlayScene::Update(DWORD dt)
 					CFlower* flower = dynamic_cast<CFlower*>(listEnemies[i]);
 					flower->CreateFireBall(&listFireBall);
 				}
-				if (listEnemies[i]->type == TYPE::BOOMERANG_BROTHER)
+				/*if (listEnemies[i]->type == TYPE::BOOMERANG_BROTHER)
 				{
 					CBomerangBrother* brother = dynamic_cast<CBomerangBrother*>(listEnemies[i]);
 					brother->CreateBoomerang(&listFireBall);
-				}
+				}*/
 		}
 		else
 			listEnemies.erase(listEnemies.begin() + i);
@@ -753,6 +766,7 @@ void CPlayScene::Update(DWORD dt)
 		else
 			listFireBall.erase(listFireBall.begin() + i);
 	}
+	
 	for (size_t i = 0; i < listItems.size(); i++)
 	{
 		if (listItems[i]->isActive)

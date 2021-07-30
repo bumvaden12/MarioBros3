@@ -12,16 +12,29 @@
 #include "PlayScence.h"
 #include "Switch_P.h"
 
+
+
 CMario::CMario(float x, float y) : CGameObject()
 {
 	category = CATEGORY::PLAYER;
 	type = TYPE::MARIO;
 	level = MARIO_LEVEL_BIG;
 	isUnTouchable = false;
-	start_x = x;
-	start_y = y;
-	this->x = x;
-	this->y = y;
+	if(!CGame::GetInstance()->Isinhiddenmap)
+	{
+		start_x = x;
+		start_y = y;
+		this->x = x;
+		this->y = y;
+	}
+	else
+	{
+		
+		this->x = start_x2;
+		this->y = start_y2;
+		CGame::GetInstance()->Isinhiddenmap = false;
+	}
+
 
 	//Contructor Flag
 	//Flag Scene
@@ -93,9 +106,12 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *listMapObj, vector<LPGAMEOBJ
 #pragma region Update Mario
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
-
+	if (CGame::GetInstance()->current_scene != 5)isDeflectByPinkNote = false;
 	if (!isGoHidenMap && !isSelectMap)
-		vy += MARIO_GRAVITY * dt;
+	{
+		if (!isDeflectByPinkNote)
+			vy += MARIO_GRAVITY * dt;
+	}
 	
 
 	// reset untouchable timer if untouchable time has passed
@@ -236,6 +252,33 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *listMapObj, vector<LPGAMEOBJ
 			}
 		}
 	}
+	if (isDeflect) {
+		if (vx == 0)
+		{
+			if (nx > 0) {
+				vx = MARIO_DEFLECT_VX * dt;
+			}
+			else
+				vx = -MARIO_DEFLECT_VX * dt;
+		}
+		if (isDeflectLeft)
+		{
+			vx = -MARIO_DEFLECT_LEFT_RIGHT * dt;
+		}
+		else if (isDeflectRight)
+			vx = MARIO_DEFLECT_LEFT_RIGHT * dt;
+		/*else if (isDeflectByPinkNote)
+		{
+			vy = -MARIO_DEFLECT_PINK_NOTE * dt;
+			vx = 0;
+		}*/
+	}
+	//turn off isDeflect
+	if (isDeflect ) {
+		isDeflect = false;
+		isDeflectLeft = false; isDeflectRight = false;
+		Fall();
+	}
 #pragma endregion
 
 #pragma region Colision with listMapObj (MapGame)
@@ -266,6 +309,9 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *listMapObj, vector<LPGAMEOBJ
 	}
 	else
 	{
+		int YHolding;
+		float vxPre = vx;
+		float vyPre = vy;
 		float min_tx, min_ty, nx = 0, ny;
 		float rdx = 0;
 		float rdy = 0;
@@ -341,6 +387,81 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *listMapObj, vector<LPGAMEOBJ
 					{
 						x += dx;
 					}
+			}
+			else if (dynamic_cast<MusicNote*>(e->obj)) {
+				MusicNote* musicNote = dynamic_cast<MusicNote*>(e->obj);
+				//vx = vxPre;
+				
+				if (e->ny < 0 && musicNote->GetState() == MUSIC_NOTE_STATE_IDLE) {
+					musicNote->SetState(MUSIC_NOTE_STATE_MOVE_DOWN);
+				}
+				else if (e->ny < 0 && musicNote->GetState() == MUSIC_NOTE_STATE_MOVE_UP) {
+					isDeflect = true;
+					Jump(); // nhay cao, thieu allow jump k nhay lai
+					//if (!CGame::GetInstance()->IsKeyDown(DIK_S))
+					//	YHolding = this->y + 35.0f;   // tru bot do cao
+				}	
+				else if (e->ny > 0)
+				{
+					vy = 0;
+				}
+				if (musicNote->typeNote == MUSIC_NOTE_TYPE_PINK) {
+					if (musicNote->appear) {
+						if (e->ny < 0 && CGame::GetInstance()->IsKeyDown(DIK_S))
+						{
+							isDeflectByPinkNote = true;
+							isDeflect = true;
+
+						}
+						else if (e->ny < 0)
+						{
+							musicNote->SetState(MUSIC_NOTE_STATE_MOVE_DOWN);
+						}
+						else if (nx < 0)
+						{
+							musicNote->SetState(MUSIC_NOTE_STATE_MOVE_RIGHT_RIGHT);
+							isDeflect = true;
+							isDeflectLeft = true;
+						}
+						else if (nx > 0)
+						{
+							musicNote->SetState(MUSIC_NOTE_STATE_MOVE_LEFT_LEFT);
+							isDeflect = true;
+							isDeflectRight = true;
+						}
+					}
+					else {
+						vx = vxPre; x += dx;
+						if (ny > 0)
+						{
+							musicNote->appear = true;
+						}
+						else
+						{
+							vy = vyPre; y += dy;
+						}
+					}
+				}
+
+			}
+			else if (dynamic_cast<WoodenBrick*>(e->obj))
+			{
+				WoodenBrick* brick = dynamic_cast<WoodenBrick*>(e->obj);
+				if (brick->typeBrick == BRICK_INCLUDE_ITEM) {
+
+					if (nx < 0)
+					{
+						isDeflect = true;
+						brick->SetState(BRICK_STATE_MOVE_RIGHT_RIGHT);
+						isDeflectLeft = true;
+					}
+					else if (nx > 0)
+					{
+						isDeflect = true;
+						brick->SetState(BRICK_STATE_MOVE_LEFT_LEFT);
+						isDeflectRight = true;
+					}
+				}
 			}
 
 			//Brick Weak
@@ -505,6 +626,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *listMapObj, vector<LPGAMEOBJ
 			}
 		}
 	}
+	//DebugOut(L"%d \n", state);
 	// clean up collision events
 	for (UINT i = 0; i < coObjEvents.size(); i++) delete coObjEvents[i];
 #pragma endregion
@@ -661,13 +783,28 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *listMapObj, vector<LPGAMEOBJ
 						return;
 					else
 					{
-						CBomerangBrother *brother = dynamic_cast<CBomerangBrother*>(e->obj);
+						Brothers *brother = dynamic_cast<Brothers*>(e->obj);
+						
 						if (e->ny < 0)
 						{
-							brother->SetState(BOMERANGBROTHER_STATE_DIE);
+							brother->SetState(BROTHER_STATE_DIE);
+							
 							CreateEffectCoin(listEffect);
 							Elastic();
 						}
+						else
+						{
+							ChangeTheLevel(DETAILMARIO::CHANGE_DOWN);
+						}
+					}
+				}
+				else if (e->obj->type == BOOMERANG)
+				{
+					if (isUnTouchable)
+						return;
+					else
+					{					
+						ChangeTheLevel(DETAILMARIO::CHANGE_DOWN);
 					}
 				}
 		}
@@ -844,75 +981,87 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *listMapObj, vector<LPGAMEOBJ
 					if (listPitStop->at(i)->type == TYPEPITSTOP::PORTAL)
 					{
 						CPortal* portal = dynamic_cast<CPortal*>(listPitStop->at(i));
-						isAllowLeft = portal->isAllowLeft;
-						isAllowRight = portal->isAllowRight;
-						isAllowUp = portal->isAllowUp;
-						isAllowDown = portal->isAllowDown;
-						//Khi va cham vs portal thi di vo chinh giua
-						if (i != lastIndexStop)
-						{
-							switch (directSelectMap)
+						if (CGame::GetInstance()->current_scene == 6)CGame::GetInstance()->Isinhiddenmap = true;
+						if (CGame::GetInstance()->current_scene != 1&& portal->GetSceneId()!=1)
+							CGame::GetInstance()->SwitchScene(portal->GetSceneId());
+						else {
+							isAllowLeft = portal->isAllowLeft;
+							isAllowRight = portal->isAllowRight;
+							isAllowUp = portal->isAllowUp;
+							isAllowDown = portal->isAllowDown;
+							//Khi va cham vs portal thi di vo chinh giua
+							if (i != lastIndexStop)
 							{
-							case DIRECT_RIGHT:
-								if (x > portal->x)
+								switch (directSelectMap)
 								{
-									x = portal->x;
-									lastIndexStop = i;
-									vx = 0;
-									vy = 0;
+								case DIRECT_RIGHT:
+									if (x > portal->x)
+									{
+										x = portal->x;
+										lastIndexStop = i;
+										vx = 0;
+										vy = 0;
+									}
+									break;
+								case DIRECT_LEFT:
+									if (x < portal->x)
+									{
+										x = portal->x;
+										lastIndexStop = i;
+										vx = 0;
+										vy = 0;
+									}
+									break;
+								case DIRECT_UP:
+									if (y < portal->y)
+									{
+										y = portal->y;
+										lastIndexStop = i;
+										vx = 0;
+										vy = 0;
+									}
+									break;
+								case DIRECT_DOWN:
+									if (y > portal->y)
+									{
+										y = portal->y;
+										lastIndexStop = i;
+										vx = 0;
+										vy = 0;
+									}
+									break;
 								}
-								break;
-							case DIRECT_LEFT:
-								if (x < portal->x)
-								{
-									x = portal->x;
-									lastIndexStop = i;
-									vx = 0;
-									vy = 0;
-								}
-								break;
-							case DIRECT_UP:
-								if (y < portal->y)
-								{
-									y = portal->y;
-									lastIndexStop = i;
-									vx = 0;
-									vy = 0;
-								}
-								break;
-							case DIRECT_DOWN:
-								if (y > portal->y)
-								{
-									y = portal->y;
-									lastIndexStop = i;
-									vx = 0;
-									vy = 0;
-								}
-								break;
+								if (lastIndexStop == i)
+									isGoingSelectMap = false;
+
 							}
-							if (lastIndexStop == i)
-								isGoingSelectMap = false;
-							
-						}
-						if (isSelectMap)
-						{
-							if (isPressKeyDown)
+							if (isSelectMap)
 							{
-								CGame::GetInstance()->SwitchScene(portal->GetSceneId());
-								portalPre = portal;
-								isPressKeyDown = false;
-								isSelectMap = false;
-								lastIndexStop = i;
+								if (isPressKeyDown)
+								{
+									if (CGame::GetInstance()->current_scene == 6)CGame::GetInstance()->Isinhiddenmap = true;
+									CGame::GetInstance()->SwitchScene(portal->GetSceneId());
+
+									portalPre = portal;
+									isSelectMap = false;
+									lastIndexStop = i;
+
+
+									isPressKeyDown = false;
+
+
+								}
 							}
+							else if (!isSelectMap)
+							{
+								isCompleteScene = true;
+								portalReturn = portal;
+								vx = 0;
+								vy = 0;
+
+							}
+
 						}
-						else if (!isSelectMap)
-						{
-							isCompleteScene = true;
-							portalReturn = portal;
-							vx = 0;
-							vy = 0;
-						}
-						
 					}
 			
 				
@@ -1400,6 +1549,14 @@ void CMario::SetState(int state)
 		vy = -MARIO_ELASETIC_SPEED_Y;
 		break;
 	}
+	case MARIO_STATE_ELASETIC_X:
+	{
+		if(vx>0)
+		vx = -MARIO_ELASETIC_SPEED_Y;
+		else
+		vx = MARIO_ELASETIC_SPEED_Y;
+		break;
+	}
 	case MARIO_STATE_FALLING:	// Roi nhanh
 	{
 		if (!isBlockFall && isOnAir)
@@ -1546,7 +1703,7 @@ void CMario::Reset()
 {
 	SetState(MARIO_STATE_IDLE);
 	SetLevel(MARIO_LEVEL_BIG);
-	SetPosition(start_x, start_y);
+	SetPosition(x, 0);
 	SetSpeed(0, 0);
 }
 

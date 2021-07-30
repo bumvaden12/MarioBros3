@@ -47,6 +47,7 @@ public:
 	bool changeScore;
 	bool doubleScore;
 
+	
 	//
 	int numCoin;
 
@@ -55,6 +56,8 @@ public:
 	float start_x;	
 	float start_y;
 
+	float start_x2;
+	float start_y2;
 	//GoHideMap
 	float posY_of_PipeIn;
 	float posY_of_PipeOut;
@@ -102,6 +105,11 @@ public:
 	bool isKeepHoldShell;
 	bool isHoldingShell;
 
+	bool isDeflect;
+	bool isDeflectLeft;
+	bool isDeflectRight;
+	bool isDeflectByPinkNote;
+
 	//Flag HideMap
 	bool isGoHidenMap ;
 	bool isOnPipeGoHideMap;
@@ -111,6 +119,7 @@ public:
 
 public:
 	CMario(float x = 0.0f, float y = 0.0f);
+	void SetPosition2(float x, float y) { this->start_x2 = x; this->start_y2 = y; };
 	void Update(DWORD dt, vector<LPGAMEOBJECT> *coObj, vector<LPGAMEOBJECT> *coEnemy, vector<LPGAMEOBJECT> *coItem, vector<LPGAMEOBJECT> *coItemIdle, vector<LPGAMEOBJECT>* listEffect, vector<LPGAMEOBJECT> *listPortal, vector<LPGAMEOBJECT> * listFireBall);
 	void Render();
 	int RenderFromAniGroup();
